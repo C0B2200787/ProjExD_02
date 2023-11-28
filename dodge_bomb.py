@@ -3,7 +3,8 @@ import sys
 import pygame as pg
 
 
-WIDTH, HEIGHT = 1600, 900
+WIDTH, HEIGHT = 1000,800  # 画面の大きさ変えてみた
+
 
 delta = {
     pg.K_UP: (0, -5),
@@ -24,15 +25,16 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     if rct.top <  0 or HEIGHT < rct.bottom:
         tate = False
     return yoko,tate
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
-    
     kk_rct = kk_img.get_rect()  # 練習３：こうかとんSurfaceのRectを抽出
-    kk_rct.center = 900, 400  # 練習３：こうかとんの初期座標
+    kk_rct.center = 500, 200  # 練習３：こうかとんの初期座標
     bb_img = pg.Surface((20,20))  # 練習１：透明のSurfaceを作る
     bb_img.set_colorkey((0,0,0))
     pg.draw.circle(bb_img, (255,0,0), (10,10),10)
@@ -40,23 +42,26 @@ def main():
     bb_rct.centerx = random.randint(0,WIDTH)
     bb_rct.centery = random.randint(0,HEIGHT)
     vx,vy = +5,+5
-
     clock = pg.time.Clock()
     tmr = 0
     num = 100
     
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bb_rct):
-            num = 0
-        num += 1
-        if num ==40:
+            num = 0  # 追加課題３：numを0にする
+        num += 1  #　追加課題３：num+=1をする
 
+        if num ==40:
             print("Game Over")
-            
             return
+        if num < 3:
+            kk_img = pg.image.load("ex02/fig/0.png")  # 追加課題３：新しくこうかとんのロード
+            kk_img = pg.transform.rotozoom(kk_img,0,2.0)  # 追加課題３：変更後のこうかとんの大きさ調整        
+        
         
         key_lst = pg.key.get_pressed()
         sum_mv = [0,0]
@@ -64,6 +69,7 @@ def main():
             if key_lst[k]:  # キーが押されたら
                 sum_mv[0] += tpl[0]
                 sum_mv[1] += tpl[1]
+
         """
         if sum_mv == [+5,0]:
             kk_img = pg.transform.rotozoom(kk_img, 180, 1.0)
@@ -81,6 +87,7 @@ def main():
             kk_img = pg.transform.rotozoom(kk_img, 90, 1.0)
         if sum_mv == [+5,+5]:
             kk_img = pg.transform.rotozoom(kk_img, 135, 1.0) """
+        
         screen.blit(bg_img, [0, 0])
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
         if check_bound(kk_rct) != (True,True):
@@ -97,10 +104,6 @@ def main():
         pg.display.update()
         tmr += 1
         clock.tick(50)
-
-        if num < 3:
-            kk_img = pg.image.load("ex02/fig/0.png")
-            kk_img = pg.transform.rotozoom(kk_img,0,2.0)
 
 
 if __name__ == "__main__":
