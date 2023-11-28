@@ -3,7 +3,7 @@ import sys
 import pygame as pg
 
 
-WIDTH, HEIGHT = 1600, 900
+WIDTH, HEIGHT = 1300, 700
 
 delta = {
     pg.K_UP: (0, -5),
@@ -12,7 +12,18 @@ delta = {
     pg.K_RIGHT: (+5, 0)
 }
 
-
+def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
+    """
+     オブジェクトが画面内or画面外を判定し，真理値タプルを返す関数
+    引数 rct：こうかとんor爆弾SurfaceのRect
+    戻り値：横方向，縦方向はみ出し判定結果（画面内：True／画面外：False）
+    """
+    yoko, tate = True,True
+    if rct.left < 0 or WIDTH <rct.right:
+        yoko =False
+    if rct.top <  0 or HEIGHT < rct.bottom:
+        tate = False
+    return yoko,tate
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -45,12 +56,20 @@ def main():
         
         screen.blit(bg_img, [0, 0])
         kk_rct.move_ip(sum_mv[0], sum_mv[1])
+        if check_bound(kk_rct) != (True,True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img,kk_rct)  # 練習３：こうかとんを移動させる
         bb_rct.move_ip(vx,vy)
+        yoko,tate =  check_bound(bb_rct)
+        if not yoko:
+            vx *= -1
+        if not tate:
+            vy *= -1
+        bb_rct.move_ip(vx, vy)
         screen.blit(bb_img,bb_rct)
         pg.display.update()
         tmr += 1
-        clock.tick(10)
+        clock.tick(50)
 
 
 if __name__ == "__main__":
